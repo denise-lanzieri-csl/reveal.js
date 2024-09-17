@@ -1,5 +1,5 @@
 /**
- * Handles the showing of speaker notes
+ * Handles the showing and 
  */
 export default class Notes {
 
@@ -38,12 +38,10 @@ export default class Notes {
 	 */
 	update() {
 
-		if( this.Reveal.getConfig().showNotes &&
-			this.element && this.Reveal.getCurrentSlide() &&
-			!this.Reveal.isScrollView() &&
-			!this.Reveal.isPrintView()
-		) {
+		if( this.Reveal.getConfig().showNotes && this.element && this.Reveal.getCurrentSlide() && !this.Reveal.print.isPrintingPDF() ) {
+
 			this.element.innerHTML = this.getSlideNotes() || '<span class="notes-placeholder">No notes on this slide.</span>';
+
 		}
 
 	}
@@ -56,11 +54,7 @@ export default class Notes {
 	 */
 	updateVisibility() {
 
-		if( this.Reveal.getConfig().showNotes &&
-			this.hasNotes() &&
-			!this.Reveal.isScrollView() &&
-			!this.Reveal.isPrintView()
-		) {
+		if( this.Reveal.getConfig().showNotes && this.hasNotes() && !this.Reveal.print.isPrintingPDF() ) {
 			this.Reveal.getRevealElement().classList.add( 'show-notes' );
 		}
 		else {
@@ -95,7 +89,7 @@ export default class Notes {
 	 * Retrieves the speaker notes from a slide. Notes can be
 	 * defined in two ways:
 	 * 1. As a data-notes attribute on the slide <section>
-	 * 2. With <aside class="notes"> elements inside the slide
+	 * 2. As an <aside class="notes"> inside of the slide
 	 *
 	 * @param {HTMLElement} [slide=currentSlide]
 	 * @return {(string|null)}
@@ -107,10 +101,10 @@ export default class Notes {
 			return slide.getAttribute( 'data-notes' );
 		}
 
-		// ... or using <aside class="notes"> elements
-		let notesElements = slide.querySelectorAll( 'aside.notes' );
-		if( notesElements ) {
-			return Array.from(notesElements).map( notesElement => notesElement.innerHTML ).join( '\n' );
+		// ... or using an <aside class="notes"> element
+		let notesElement = slide.querySelector( 'aside.notes' );
+		if( notesElement ) {
+			return notesElement.innerHTML;
 		}
 
 		return null;
